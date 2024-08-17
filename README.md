@@ -48,4 +48,4 @@ Feel free to visit Issues and Discussion tab for questions/features/bugs info's.
  - [`jpenilla/run-paper`](https://github.com/jpenilla/run-task) for easy `runServer` implementation for quick plugin testing
  - [`tr7zw/Item-NBT-API`](https://github.com/tr7zw/Item-NBT-API) for easy and understandable access to NBT data
  - [`Spigot Forums`](https://www.spigotmc.org/forums/) for some explanations for API development
- - [`RunsWithShovels`](https://bukkit.org/members/runswithshovels.91032045/) for Configurations Manager class
+ - [`RunsWithShovels`](https://bukkit.org/members/runswithshovels.91032045/) for [Configurations Manager class](https://pastebin.com/StEGeQTK)
