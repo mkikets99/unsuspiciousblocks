@@ -1,0 +1,11 @@
+name: UnsuspiciousBlocks
+version: '1.0-SNAPSHOT'
+main: com.mkikets.unsuspiciousBlocks.UnsuspiciousBlocks
+api-version: '1.20'
+description: "Plugin which simply fix \"Suspicious Sand\" and \"Suspicious Gravel\" placement to place back loot table of item"
+
+commands:
+  unsuspiciousblocks:
+    aliases: [unsusblocks,unsuspicious,unsus,usbl]
+    description: "Command for controlling UnsuspiciousBlocks plugin"
+    usage: "/unsuspiciousblocks [enable|disable|hint-toggle|help]"
