@@ -11,10 +11,10 @@ import java.io.IOException;
 
 public class ConfigManager {
     private ConfigManager() {}
-    private static ConfigManager manager = new ConfigManager();
+    private final static ConfigManager manager = new ConfigManager();
     public static ConfigManager getManager() {return manager;}
 
-    private UnsuspiciousBlocks plugin = UnsuspiciousBlocks.getPlugin(UnsuspiciousBlocks.class);
+    private final UnsuspiciousBlocks plugin = UnsuspiciousBlocks.getPlugin(UnsuspiciousBlocks.class);
 
     public FileConfiguration config;
 
@@ -24,7 +24,7 @@ public class ConfigManager {
         configfile = new File(plugin.getDataFolder(), "config.yml");
 
         if (!this.configfile.exists()) {
-            this.configfile.getParentFile().mkdirs();
+            boolean mkdirs = this.configfile.getParentFile().mkdirs();
             plugin.saveResource("config.yml", false);
         }
 

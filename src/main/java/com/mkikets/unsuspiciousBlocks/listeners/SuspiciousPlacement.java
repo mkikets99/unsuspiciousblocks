@@ -26,17 +26,17 @@ import java.util.stream.Collectors;
 
 public class SuspiciousPlacement implements Listener {
 
-    private List<LootTable> randomizer_sand = Arrays.asList(
+    private final List<LootTable> randomizer_sand = Arrays.asList(
             LootTables.DESERT_PYRAMID_ARCHAEOLOGY.getLootTable(),
             LootTables.DESERT_WELL_ARCHAEOLOGY.getLootTable(),
             LootTables.OCEAN_RUIN_WARM_ARCHAEOLOGY.getLootTable()
     );
-    private List<LootTable> randomizer_gravel = Arrays.asList(
+    private final List<LootTable> randomizer_gravel = Arrays.asList(
             LootTables.OCEAN_RUIN_COLD_ARCHAEOLOGY.getLootTable(),
             LootTables.TRAIL_RUINS_ARCHAEOLOGY_COMMON.getLootTable(),
             LootTables.TRAIL_RUINS_ARCHAEOLOGY_RARE.getLootTable()
     );
-    private Map<String,LootTable> mappedLTNames = Map.of(
+    private final Map<String,LootTable> mappedLTNames = Map.of(
             "minecraft:archaeology/desert_pyramid",LootTables.DESERT_PYRAMID_ARCHAEOLOGY.getLootTable(),
             "minecraft:archaeology/desert_well",LootTables.DESERT_WELL_ARCHAEOLOGY.getLootTable(),
             "minecraft:archaeology/ocean_ruin_warm",LootTables.OCEAN_RUIN_WARM_ARCHAEOLOGY.getLootTable(),
@@ -44,7 +44,7 @@ public class SuspiciousPlacement implements Listener {
             "minecraft:archaeology/trial_ruins_common",LootTables.TRAIL_RUINS_ARCHAEOLOGY_COMMON.getLootTable(),
             "minecraft:archaeology/trial_ruins_rare",LootTables.TRAIL_RUINS_ARCHAEOLOGY_RARE.getLootTable()
     );
-    private Map<String,Object> mappedLTLore = Map.of(
+    private final Map<String,Object> mappedLTLore = Map.of(
             "minecraft:archaeology/desert_pyramid", Component.text("Desert Pyramid").color(NamedTextColor.YELLOW),
             "minecraft:archaeology/desert_well",Component.text("Desert Well").color(NamedTextColor.YELLOW),
             "minecraft:archaeology/ocean_ruin_warm",Component.text("Warm Ocean Ruin").color(NamedTextColor.YELLOW),
@@ -62,7 +62,6 @@ public class SuspiciousPlacement implements Listener {
             if (blockType == Material.SUSPICIOUS_SAND || blockType == Material.SUSPICIOUS_GRAVEL) {
                 BrushableBlock brushableBlock = (BrushableBlock) block.getState(false);
                 if (!brushableBlock.hasLootTable()) {
-                    ItemMeta meta = item.getItemMeta();
                     boolean has_any_data = NBT.get(item, nbt->{
                         String loot_table_str = nbt.getString("SavedLootTable");
                         ItemStack loot_item = nbt.getItemStack("SavedLootItem");
@@ -91,8 +90,7 @@ public class SuspiciousPlacement implements Listener {
 
     private LootTable getStandardLootTable(List<LootTable> randomizer) {
         Random random = new Random();
-        LootTable chosen_one = randomizer.get(random.nextInt(randomizer.size()));
-        return chosen_one;
+        return randomizer.get(random.nextInt(randomizer.size()));
     }
 
     @EventHandler(priority = EventPriority.HIGH)
@@ -105,8 +103,8 @@ public class SuspiciousPlacement implements Listener {
                     NBT.modifyPersistentData(entity,nbt->{
                         String loot_table = (((BrushableBlock) block.getState()).getLootTable() == null)? null : ((BrushableBlock) block.getState()).getLootTable().getKey().toString();
                         if(loot_table != null) nbt.setString("SavedLootTable",loot_table);
-                        ItemStack itins = ((BrushableBlock) block.getState()).getItem();
-                        if (itins.getAmount() > 0 ) nbt.setItemStack("SavedLootItem",itins);
+                        ItemStack itemsInside = ((BrushableBlock) block.getState()).getItem();
+                        if (itemsInside.getAmount() > 0 ) nbt.setItemStack("SavedLootItem",itemsInside);
                         nbt.setLong("SavedLootTableSeed",((BrushableBlock) block.getState()).getSeed());
                     });
                 }
@@ -118,8 +116,8 @@ public class SuspiciousPlacement implements Listener {
     public void onItemSpawn(ItemSpawnEvent event) {
         if ((boolean) ConfigManager.getManager().getConfig().get("plugin.enabled", true)) {
             Entity fb = null;
-            List<Entity> ents = event.getEntity().getNearbyEntities(2, 2, 2);
-            for (Entity e : ents) {
+            List<Entity> entities = event.getEntity().getNearbyEntities(2, 2, 2);
+            for (Entity e : entities) {
                 if (e instanceof FallingBlock) {
                     fb = e;
                 }
@@ -129,9 +127,9 @@ public class SuspiciousPlacement implements Listener {
             if (item.getType() == Material.SUSPICIOUS_SAND || item.getType() == Material.SUSPICIOUS_GRAVEL) {
                 ItemMeta meta = item.getItemMeta();
                 assert fb != null;
-                String loot_table = NBT.getPersistentData(fb, nbt_entity -> (String) nbt_entity.getString("SavedLootTable"));
-                Long loot_seed = NBT.getPersistentData(fb, nbt_entity -> (Long) nbt_entity.getLong("SavedLootTableSeed"));
-                ItemStack loot_item = NBT.getPersistentData(fb, nbt_entity -> (ItemStack) nbt_entity.getItemStack("SavedLootItem"));
+                String loot_table = NBT.getPersistentData(fb, nbt_entity -> nbt_entity.getString("SavedLootTable"));
+                Long loot_seed = NBT.getPersistentData(fb, nbt_entity -> nbt_entity.getLong("SavedLootTableSeed"));
+                ItemStack loot_item = NBT.getPersistentData(fb, nbt_entity -> nbt_entity.getItemStack("SavedLootItem"));
                 if ((boolean) ConfigManager.getManager().getConfig().get("plugin.show_hints", false)) {
                     if (loot_table != null && !loot_table.isEmpty()) {
                         meta.lore(List.of((Component) mappedLTLore.get(loot_table)));
