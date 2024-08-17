@@ -25,10 +25,10 @@ Same logic is applied when block been brushed, but not entirely, but instead of 
 
 | Command                         | Behaviour                                                                        |
 |---------------------------------|----------------------------------------------------------------------------------|
-| /unsuspiciousblocks enable      | Enables plugin behaviour                                                         |
-| /unsuspiciousblocks disable     | Disables plugin behaviour                                                        |
-| /unsuspiciousblocks help        | Prints Commands and their behaviour                                              |
-| /unsuspiciousblocks hint-toggle | Toggle's Lore data with info on what type of `Suspicious block`/`Item` is inside |
+| `/unsuspiciousblocks enable`      | Enables plugin behaviour                                                         |
+| `/unsuspiciousblocks disable`     | Disables plugin behaviour                                                        |
+| `/unsuspiciousblocks help`        | Prints Commands and their behaviour                                              |
+| `/unsuspiciousblocks hint-toggle` | Toggle's Lore data with info on what type of `Suspicious block`/`Item` is inside |
 
 ### Contribute
 
