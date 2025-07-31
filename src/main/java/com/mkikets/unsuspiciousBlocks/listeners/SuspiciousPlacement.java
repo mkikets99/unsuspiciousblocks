@@ -65,7 +65,7 @@ public class SuspiciousPlacement implements Listener {
                     boolean has_any_data = NBT.get(item, nbt->{
                         String loot_table_str = nbt.getString("SavedLootTable");
                         ItemStack loot_item = nbt.getItemStack("SavedLootItem");
-                        return loot_item != null || loot_table_str != null;
+                        return loot_item != null || (loot_table_str != null && !loot_table_str.isEmpty());
                     });
                     if (!has_any_data) {
                         LootTable chosenOne = getStandardLootTable(blockType == Material.SUSPICIOUS_SAND ? randomizer_sand : randomizer_gravel);

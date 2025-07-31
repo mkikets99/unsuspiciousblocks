@@ -28,18 +28,38 @@ public class CommandControl implements CommandExecutor, TabCompleter {
                                 Component.text("- enable/disable ItemMeta showing information about block's type/content").color(NamedTextColor.GOLD)))
                                 .appendNewline().append(Component.text("/unsuspiciousblocks help ").color(NamedTextColor.AQUA).append(
                                 Component.text("- print this information").color(NamedTextColor.GOLD)))
+                                .appendNewline().append(Component.text("/unsuspiciousblocks status ").color(NamedTextColor.AQUA).append(
+                                        Component.text("- check plugin status").color(NamedTextColor.GOLD)))
                 );
                 return true;
             }
             switch (args[0]){
                 case "enable":
                     ConfigManager.getManager().config.set("plugin.enabled",true);
+                    sender.sendMessage(Component.text("Plugin enabled").color(NamedTextColor.GREEN));
+                    ConfigManager.getManager().saveConfig();
                     break;
                 case "disable":
                     ConfigManager.getManager().config.set("plugin.enabled",false);
+                    sender.sendMessage(Component.text("Plugin disabled").color(NamedTextColor.RED));
+                    ConfigManager.getManager().saveConfig();
                     break;
                 case "hint-toggle":
                     ConfigManager.getManager().config.set("plugin.show_hints",!((boolean)ConfigManager.getManager().config.get("plugin.show_hints",false)));
+                    boolean showHintsStatus = (boolean) ConfigManager.getManager().config.get("plugin.show_hints",false);
+                    sender.sendMessage(Component.text("Hints ").color(NamedTextColor.GOLD)
+                            .append(Component.text(showHintsStatus ? "enabled" : "disabled").color(NamedTextColor.GREEN)));
+                    ConfigManager.getManager().saveConfig();
+                    break;
+                case "status":
+                    boolean enabled = (boolean) ConfigManager.getManager().config.get("plugin.enabled",true);
+                    boolean showHints = (boolean) ConfigManager.getManager().config.get("plugin.show_hints",false);
+                    sender.sendMessage(Component.text("Plugin status: ").color(NamedTextColor.GOLD)
+                            .append(Component.text(enabled ? "enabled" : "disabled").color(NamedTextColor.GREEN))
+                            .appendNewline()
+                            .append(Component.text("Hints: ").color(NamedTextColor.GOLD))
+                            .append(Component.text(showHints ? "enabled" : "disabled").color(NamedTextColor.GREEN))
+                    );
                     break;
             }
             return true;
@@ -51,7 +71,7 @@ public class CommandControl implements CommandExecutor, TabCompleter {
     public @Nullable List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
         if(sender instanceof Player) {
             if(args.length == 1){
-                return List.of("enable", "disable", "hint-toggle", "help");
+                return List.of("enable", "disable", "hint-toggle", "help", "status");
             }
         }
         return List.of();
