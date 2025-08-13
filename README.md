@@ -23,12 +23,23 @@ Same logic is applied when block been brushed, but not entirely, but instead of 
 
 ### Commands
 
-| Command                         | Behaviour                                                                        |
-|---------------------------------|----------------------------------------------------------------------------------|
-| `/unsuspiciousblocks enable`      | Enables plugin behaviour                                                         |
-| `/unsuspiciousblocks disable`     | Disables plugin behaviour                                                        |
-| `/unsuspiciousblocks help`        | Prints Commands and their behaviour                                              |
-| `/unsuspiciousblocks hint-toggle` | Toggle's Lore data with info on what type of `Suspicious block`/`Item` is inside |
+| Command                           | Behaviour                                                                        | Permission                 |
+|-----------------------------------|----------------------------------------------------------------------------------|----------------------------|
+| `/unsuspiciousblocks activate`    | Activates creation of suspicious blocks                                          | `unsuspiciousblocks.use`   |
+| `/unsuspiciousblocks enable`      | Enables plugin behaviour                                                         | `unsuspiciousblocks.admin` |
+| `/unsuspiciousblocks deactivate`  | Deactivates creation of suspicious blocks                                        | `unsuspiciousblocks.use`   |
+| `/unsuspiciousblocks disable`     | Disables plugin behaviour                                                        | `unsuspiciousblocks.admin` |
+| `/unsuspiciousblocks help`        | Prints Commands and their behaviour                                              | `unsuspiciousblocks.use`   |
+| `/unsuspiciousblocks hint-toggle` | Toggle's Lore data with info on what type of `Suspicious block`/`Item` is inside | `unsuspiciousblocks.admin` |
+| `/unsuspiciousblocks status`      | Shows status of plugin                                                           | `unsuspiciousblocks.use`   |
+
+
+### Permissions
+
+| Permission                        | Use case                          |
+|-----------------------------------|-----------------------------------|
+| `unsuspiciousblocks.use`          | Allows usage of all base commands |
+| `unsuspiciousblocks.admin`        | Allows to execute admin commands  |
 
 ### Contribute
 
