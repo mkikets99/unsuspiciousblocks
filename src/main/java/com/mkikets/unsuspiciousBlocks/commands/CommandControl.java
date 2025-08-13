@@ -12,6 +12,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
+import java.util.stream.Stream;
 
 public class CommandControl implements CommandExecutor, TabCompleter {
     @Override
@@ -20,12 +21,16 @@ public class CommandControl implements CommandExecutor, TabCompleter {
             if(args.length == 0 || args[0].equals("help")){
                 sender.sendMessage(
                         Component.text("=========UnSUSpiciousBlocks==========").color(NamedTextColor.GOLD)
-                                .appendNewline().append(Component.text("/unsuspiciousblocks enable ").color(NamedTextColor.AQUA).append(
-                                Component.text("- enable plugin").color(NamedTextColor.GOLD)))
-                                .appendNewline().append(Component.text("/unsuspiciousblocks disable ").color(NamedTextColor.AQUA).append(
-                                Component.text("- disable plugin").color(NamedTextColor.GOLD)))
-                                .appendNewline().append(Component.text("/unsuspiciousblocks hint-toggle ").color(NamedTextColor.AQUA).append(
-                                Component.text("- enable/disable ItemMeta showing information about block's type/content").color(NamedTextColor.GOLD)))
+                                .appendNewline().append(Component.text("/unsuspiciousblocks activate ").color(NamedTextColor.AQUA).append(
+                                        Component.text("- enable insertion of item inside of suspicious blocks").color(NamedTextColor.GOLD)))
+                                .appendNewline().append(sender.hasPermission("unsuspiciousblocks.admin") ? Component.text("/unsuspiciousblocks enable ").color(NamedTextColor.AQUA).append(
+                                        Component.text("- enable plugin").color(NamedTextColor.GOLD)) : Component.empty())
+                                .appendNewline().append(Component.text("/unsuspiciousblocks deactivate ").color(NamedTextColor.AQUA).append(
+                                        Component.text("- disable insertion of item inside of suspicious blocks").color(NamedTextColor.GOLD)))
+                                .appendNewline().append(sender.hasPermission("unsuspiciousblocks.admin") ? Component.text("/unsuspiciousblocks disable ").color(NamedTextColor.AQUA).append(
+                                Component.text("- disable plugin").color(NamedTextColor.GOLD)) : Component.empty())
+                                .appendNewline().append(sender.hasPermission("unsuspiciousblocks.admin") ? Component.text("/unsuspiciousblocks hint-toggle ").color(NamedTextColor.AQUA).append(
+                                Component.text("- enable/disable ItemMeta showing information about block's type/content").color(NamedTextColor.GOLD)) : Component.empty())
                                 .appendNewline().append(Component.text("/unsuspiciousblocks help ").color(NamedTextColor.AQUA).append(
                                 Component.text("- print this information").color(NamedTextColor.GOLD)))
                                 .appendNewline().append(Component.text("/unsuspiciousblocks status ").color(NamedTextColor.AQUA).append(
@@ -35,16 +40,29 @@ public class CommandControl implements CommandExecutor, TabCompleter {
             }
             switch (args[0]){
                 case "enable":
+                    //if player has permission to enable plugin
+                    if(!sender.hasPermission("unsuspiciousblocks.admin")) {
+                        sender.sendMessage(Component.text("You do not have permission to enable the plugin").color(NamedTextColor.RED));
+                        return true;
+                    }
                     ConfigManager.getManager().config.set("plugin.enabled",true);
                     sender.sendMessage(Component.text("Plugin enabled").color(NamedTextColor.GREEN));
                     ConfigManager.getManager().saveConfig();
                     break;
                 case "disable":
+                    if(!sender.hasPermission("unsuspiciousblocks.admin")) {
+                        sender.sendMessage(Component.text("You do not have permission to enable the plugin").color(NamedTextColor.RED));
+                        return true;
+                    }
                     ConfigManager.getManager().config.set("plugin.enabled",false);
                     sender.sendMessage(Component.text("Plugin disabled").color(NamedTextColor.RED));
                     ConfigManager.getManager().saveConfig();
                     break;
                 case "hint-toggle":
+                    if(!sender.hasPermission("unsuspiciousblocks.admin")) {
+                        sender.sendMessage(Component.text("You do not have permission to enable the plugin").color(NamedTextColor.RED));
+                        return true;
+                    }
                     ConfigManager.getManager().config.set("plugin.show_hints",!((boolean)ConfigManager.getManager().config.get("plugin.show_hints",false)));
                     boolean showHintsStatus = (boolean) ConfigManager.getManager().config.get("plugin.show_hints",false);
                     sender.sendMessage(Component.text("Hints ").color(NamedTextColor.GOLD)
@@ -61,6 +79,16 @@ public class CommandControl implements CommandExecutor, TabCompleter {
                             .append(Component.text(showHints ? "enabled" : "disabled").color(NamedTextColor.GREEN))
                     );
                     break;
+                case "activate":
+                    ConfigManager.getManager().getConfig().set(String.format("plugin._creation_players.%s", ((Player) sender).getUniqueId()), true);
+                    ConfigManager.getManager().saveConfig();
+                    sender.sendMessage(Component.text("You have activated the creation of Unsuspicious Blocks").color(NamedTextColor.GREEN));
+                    break;
+                case "deactivate":
+                    ConfigManager.getManager().getConfig().set(String.format("plugin._creation_players.%s", ((Player) sender).getUniqueId()), false);
+                    ConfigManager.getManager().saveConfig();
+                    sender.sendMessage(Component.text("You have deactivated the creation of Unsuspicious Blocks").color(NamedTextColor.RED));
+                    break;
             }
             return true;
         }
@@ -70,8 +98,13 @@ public class CommandControl implements CommandExecutor, TabCompleter {
     @Override
     public @Nullable List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
         if(sender instanceof Player) {
+            // check if player has permission to execute admin commands
+
             if(args.length == 1){
-                return List.of("enable", "disable", "hint-toggle", "help", "status");
+                if(!sender.hasPermission("unsuspiciousblocks.admin") )
+                    return Stream.of("status", "activate", "deactivate").sorted().toList();
+                else
+                    return Stream.of("activate", "enable", "deactivate", "disable", "hint-toggle", "help", "status").sorted().toList();
             }
         }
         return List.of();

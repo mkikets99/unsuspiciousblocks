@@ -16,6 +16,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.EntityChangeBlockEvent;
 import org.bukkit.event.entity.ItemSpawnEvent;
+import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.loot.LootTable;
@@ -87,6 +88,41 @@ public class SuspiciousPlacement implements Listener {
             }
         }
     }
+    @EventHandler(priority = EventPriority.HIGH)
+    private void onBlockInteract(PlayerInteractEvent event){
+        // Check if the plugin is enabled
+        if ((boolean) ConfigManager.getManager().getConfig().get("plugin.enabled", true)) {
+            // Check if the block is a sand or gravel
+            Block block = event.getClickedBlock();
+            //check if player has activated the placement of unsuspicious blocks
+            if (block == null || !((boolean) ConfigManager.getManager().getConfig().get(String.format("plugin._creation_players.%s", event.getPlayer().getUniqueId()), false))) {
+                return;
+            }
+            if (block.getType() == Material.SAND || block.getType() == Material.GRAVEL) {
+                //turn sand into suspicious sand or gravel into suspicious gravel
+                Material newType = block.getType() == Material.SAND ? Material.SUSPICIOUS_SAND : Material.SUSPICIOUS_GRAVEL;
+                // Check if the block is already suspicious
+                if (block.getType() != newType) {
+                    // Change the block type to suspicious sand or gravel
+                    block.setType(newType);
+                    // Get the item in hand
+                    ItemStack itemInHand = event.getItem();
+                    // Check if player is crouching
+                    if (event.getPlayer().isSneaking()) {
+                        // If player is crouching, set only the item inside
+                        BrushableBlock brushableBlock = (BrushableBlock) block.getState(false);
+                        if (itemInHand != null && itemInHand.getAmount() > 0) {
+                            // Set the item inside the suspicious block
+                            brushableBlock.setItem(itemInHand);
+                            // Clear the item in hand
+                            event.getPlayer().getInventory().setItemInMainHand(new ItemStack(Material.AIR));
+                        }
+                    }
+                }
+
+            }
+        }
+    }
 
     private LootTable getStandardLootTable(List<LootTable> randomizer) {
         Random random = new Random();
@@ -123,10 +159,12 @@ public class SuspiciousPlacement implements Listener {
                 }
             }
             ItemStack item = event.getEntity().getItemStack();
-
+            // continue only if item is created from entity falling block
+            if (fb == null || item.getType() == Material.AIR) {
+                return;
+            }
             if (item.getType() == Material.SUSPICIOUS_SAND || item.getType() == Material.SUSPICIOUS_GRAVEL) {
                 ItemMeta meta = item.getItemMeta();
-                assert fb != null;
                 String loot_table = NBT.getPersistentData(fb, nbt_entity -> nbt_entity.getString("SavedLootTable"));
                 Long loot_seed = NBT.getPersistentData(fb, nbt_entity -> nbt_entity.getLong("SavedLootTableSeed"));
                 ItemStack loot_item = NBT.getPersistentData(fb, nbt_entity -> nbt_entity.getItemStack("SavedLootItem"));
